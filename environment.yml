@@ -1,0 +1,14 @@
+name: final-project
+channels:
+- conda-forge
+- defaults
+- menpo
+dependencies:
+- libmagic
+- python==3.6
+# Remember to also add them in setup.cfg but unpinned.
+- pip:
+  - numpy
+  - pandas
+  - matplotlib
+prefix: /usr/local/anaconda3/envs/final-project
