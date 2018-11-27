@@ -11,7 +11,7 @@ rotation_speed = 0.1; % degree per sample
 front_sensor_data = [];
 right_sensor_data = [];
 
-theta = 1;
+theta = 0;
 while theta < 360 % just one turn
     if mod(theta,30) == 0 % print theta for every 30 degrees
         disp(theta);

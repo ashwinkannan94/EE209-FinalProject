@@ -15,7 +15,6 @@ function chris_test1
     xlabel('time');
     ylabel('right sensor measurement');
     
-    [dist,ix,iy] = dtw(denoised_front_sensor_segment, denoised_right_sensor_segment, 'absolute');
-    dtw(denoised_front_sensor_segment, denoised_right_sensor_segment, 'absolute');
+    dist = dtw(denoised_front_sensor_segment,denoised_right_sensor_segment)
 end
 
