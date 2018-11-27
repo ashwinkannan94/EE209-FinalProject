@@ -27,8 +27,13 @@ function [new_sensor_data1, new_sensor_data2] = resample_and_add_noise(sensor_da
         sd_noise2 = sensor_data2(iter)*sensor_noise;
         
         % add Gaussian noise
-        new_sensor_data1 = [new_sensor_data1, normrnd(sensor_data1(iter), sd_noise1)];
-        new_sensor_data2 = [new_sensor_data2, normrnd(sensor_data2(iter), sd_noise2)];
+%         new_sensor_data1 = [new_sensor_data1, normrnd(sensor_data1(iter), sd_noise1)];
+%         new_sensor_data2 = [new_sensor_data2, normrnd(sensor_data2(iter), sd_noise2)];
+        if iter >= 3600
+            break;
+        end
+        new_sensor_data1 = [new_sensor_data1, sensor_data1(iter)];
+        new_sensor_data2 = [new_sensor_data2, sensor_data2(iter)];
         
         resample_step = round(randi(rotation_uncertainty)*resample_scale(count));
 %         disp(resample_step)
