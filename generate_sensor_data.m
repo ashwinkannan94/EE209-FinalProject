@@ -5,14 +5,14 @@ robot_pos_x = 550;
 robot_pos_y = 550;
 
 % Sensor rotation speed
-rotation_speed = 1; % degree per sample
+rotation_speed = 0.1; % degree per sample
 
 % get sensor data time series for two 360 degree turns
 front_sensor_data = [];
 right_sensor_data = [];
 
-theta = 0.1;
-while theta < 360 * 5.5 % five and a half turns
+theta = 1;
+while theta < 360 % just one turn
     if mod(theta,30) == 0 % print theta for every 30 degrees
         disp(theta);
     end
@@ -26,6 +26,9 @@ while theta < 360 * 5.5 % five and a half turns
 %     rotation_speed = randi(30); % between 1 and 10 degree per sample
     theta = theta + rotation_speed;
 end
+
+front_sensor_data = [front_sensor_data, front_sensor_data, front_sensor_data, front_sensor_data, front_sensor_data, front_sensor_data];
+right_sensor_data = [right_sensor_data, right_sensor_data, right_sensor_data, right_sensor_data, right_sensor_data, right_sensor_data];
 
 figure;
 plot(environment(:,1),environment(:,2),'.k'); % plot the map
