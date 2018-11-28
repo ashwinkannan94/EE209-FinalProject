@@ -1,19 +1,24 @@
 function chris_test1    
     fs = 14000; % 14kHz
     [front_sensor_data, right_sensor_data] = resample_and_add_noise;
+
+%     denoised_front_sensor_data = wdenoise(front_sensor_data);
+%     denoised_right_sensor_data = wdenoise(right_sensor_data);
     
 %     plot(new_sensor_data1);
     
-%     fc = 100;
-%     [b,a] = butter(6,fc/(fs/2));
-%     lp_data1 = filtfilt(b,a,front_sensor_data);
-%     lp_data2 = filtfilt(b,a,right_sensor_data);
-%     hold on
-%     plot(lp_data2);
-%     
-    first_peak_loc1 = [155, 1459, 3245, 5664, 8009, 9644];
-    second_peak_loc1 = [552, 1956, 4064, 6463, 8609, 10090];
-    first_peak_loc2 = [222, 1546, 3407, 5827, 8139, 9746];
+    fc = 100;
+    [b,a] = butter(6,fc/(fs/2));
+    denoised_front_sensor_data = filtfilt(b,a,front_sensor_data);
+    denoised_right_sensor_data = filtfilt(b,a,right_sensor_data);
+
+    [front_landmarks, right_landmarks] = clusterLandmarks(denoised_front_sensor_data, denoised_right_sensor_data);
+    
+%     first_peak_loc1 = [155, 1459, 3245, 5664, 8009, 9644];
+%     second_peak_loc1 = [552, 1956, 4064, 6463, 8609, 10090];
+%     first_peak_loc2 = [222, 1546, 3407, 5827, 8139, 9746];
+    first_peak_loc1 = front_landmarks(1,:);
+    
     
     landmarks = [first_peak_loc1; second_peak_loc1];
     [front_data_segments, landmarks_per_seg] = segment_data(front_sensor_data, landmarks);
@@ -27,7 +32,7 @@ function chris_test1
 
 %     plot(time_warped_avg);
 
-    degrees = get_degrees_from_sensor_data(front_time_warped_avg, right_time_warped_avg);
+    [degrees, distance] = get_degrees_from_sensor_data(front_time_warped_avg, right_time_warped_avg);
 %     order = 3;
 %     framelen = 11;
 %     sgf = sgolayfilt(time_warped_avg,order,framelen);
@@ -74,8 +79,8 @@ function [time_warped_avg, new_sampling_rate, new_landmarks] = time_warpping(dat
         seg2 = data_segments{iter};
 %         seg1 = wdenoise(seg1,9,'NoiseEstimate','LevelIndependent');
 %         seg2 = wdenoise(seg2,9,'NoiseEstimate','LevelIndependent');
-        seg1 = wdenoise(seg1); % denoise signal using wavelet
-        seg2 = wdenoise(seg2); % denoise signal using wavelet
+%         seg1 = wdenoise(seg1); % denoise signal using wavelet
+%         seg2 = wdenoise(seg2); % denoise signal using wavelet
         [~,ix,iy] = dtw(seg1,seg2);
         time_warped_seg1 = seg1(ix); % time warp the first segment
         time_warped_seg2 = seg2(iy); % time warp the second segment

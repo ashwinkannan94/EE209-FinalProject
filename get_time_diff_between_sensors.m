@@ -19,7 +19,7 @@ function time_offset = get_time_diff_between_sensors(front_data_seg, right_data_
 
     angular_v_sample = 20./sample_offset; % angular velocity in degree/sample
 
-    degrees = cumsum(angular_v_sample); % find degrees for each sample
+    [degrees, distance] = cumsum(angular_v_sample); % find degrees for each sample
 
 %     % determine which data is leading
 %     mid_idx = round(length(front_warp_path)/2);

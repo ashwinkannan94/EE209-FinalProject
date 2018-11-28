@@ -1,7 +1,7 @@
 % input: front data segment and right data segment. (for 360 degree turn)
-% output: orientation in degrees for each sample
+% output: orientation in degrees for each sample and distance measurement
 
-function degrees = get_degrees_from_sensor_data(front_data_seg, right_data_seg)
+function [degrees, distance] = get_degrees_from_sensor_data(front_data_seg, right_data_seg)
     % concatenate to make 720 degree turn to avoid flat ends in time warped
     % signal
     front_data_seg = [front_data_seg, front_data_seg]; 
@@ -22,4 +22,5 @@ function degrees = get_degrees_from_sensor_data(front_data_seg, right_data_seg)
 
     angular_v_sample = 20./sample_offset; % angular velocity in degree/sample
     degrees = cumsum(angular_v_sample); % find degrees for each sample
+    distance = front_data_seg(start_idx:end_idx);
 end
