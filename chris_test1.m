@@ -21,9 +21,13 @@ function chris_test1
     
     
     
-    [time_warped_avg, new_sampling_rate, new_landmarks] = time_warpping(front_data_segments, fs, landmarks_per_seg);
-    
-    plot(time_warped_avg);
+    [front_time_warped_avg, new_sampling_rate, new_landmarks] = time_warpping(front_data_segments, fs, landmarks_per_seg);
+    [right_time_warped_avg, new_sampling_rate, new_landmarks] = time_warpping(right_data_segments, fs, landmarks_per_seg);
+
+
+%     plot(time_warped_avg);
+
+    degrees = get_degrees_from_sensor_data(front_time_warped_avg, right_time_warped_avg);
 %     order = 3;
 %     framelen = 11;
 %     sgf = sgolayfilt(time_warped_avg,order,framelen);
@@ -33,16 +37,16 @@ function chris_test1
 %     load('denoised_front_sensor_segment.mat');
 %     load('denoised_right_sensor_segment.mat');
 %     
-%     figure;
-%     subplot(2,1,1);
-%     plot(denoised_front_sensor_segment);
-%     xlabel('time');
-%     ylabel('front sensor measurement');
-% 
-%     subplot(2,1,2); 
-%     plot(denoised_right_sensor_segment);
-%     xlabel('time');
-%     ylabel('right sensor measurement');
+    figure;
+    subplot(2,1,1);
+    plot(front_time_warped_avg);
+    xlabel('time');
+    ylabel('front sensor measurement');
+
+    subplot(2,1,2); 
+    plot(right_time_warped_avg);
+    xlabel('time');
+    ylabel('right sensor measurement');
 %     
 %     [dist,ix,iy] = dtw(denoised_front_sensor_segment, denoised_right_sensor_segment, 'absolute');
 %     dtw(denoised_front_sensor_segment, denoised_right_sensor_segment, 'absolute');
