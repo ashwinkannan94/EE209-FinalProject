@@ -22,5 +22,6 @@ function [degrees, distance] = get_degrees_from_sensor_data(front_data_seg, righ
 
     angular_v_sample = 20./sample_offset; % angular velocity in degree/sample
     degrees = cumsum(angular_v_sample); % find degrees for each sample
+    degrees = degrees.*(360/degrees(end)); % scale the angles so that it stops at 360 degrees.
     distance = front_data_seg(start_idx:end_idx);
 end

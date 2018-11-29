@@ -1,4 +1,5 @@
-function chris_test1    
+function chris_test1 
+    rng(3)
     fs = 14000; % 14kHz
     [front_sensor_data, right_sensor_data] = resample_and_add_noise;
 
@@ -14,24 +15,25 @@ function chris_test1
 
     [front_landmarks, right_landmarks] = clusterLandmarks(denoised_front_sensor_data, denoised_right_sensor_data);
     
+    front_landmarks = front_landmarks(:,any(front_landmarks));
+    right_landmarks = right_landmarks(:,any(right_landmarks));
 %     first_peak_loc1 = [155, 1459, 3245, 5664, 8009, 9644];
 %     second_peak_loc1 = [552, 1956, 4064, 6463, 8609, 10090];
 %     first_peak_loc2 = [222, 1546, 3407, 5827, 8139, 9746];
-    first_peak_loc1 = front_landmarks(1,:);
-    
-    
-    landmarks = [first_peak_loc1; second_peak_loc1];
-    [front_data_segments, landmarks_per_seg] = segment_data(front_sensor_data, landmarks);
-    right_data_segments = segment_data(right_sensor_data, first_peak_loc2);
+
+    [front_data_segments, landmarks_per_seg] = segment_data(front_sensor_data, front_landmarks);
+    right_data_segments = segment_data(right_sensor_data, front_landmarks);
     
     
     
-    [front_time_warped_avg, new_sampling_rate, new_landmarks] = time_warpping(front_data_segments, fs, landmarks_per_seg);
-    [right_time_warped_avg, new_sampling_rate, new_landmarks] = time_warpping(right_data_segments, fs, landmarks_per_seg);
+    front_time_warped_avg = time_warpping(front_data_segments, landmarks_per_seg);
+    right_time_warped_avg = time_warpping(right_data_segments, landmarks_per_seg);
 
 
 %     plot(time_warped_avg);
+    right_time_warped_avg = resample(right_time_warped_avg, length(front_time_warped_avg), length(right_time_warped_avg));
 
+    
     [degrees, distance] = get_degrees_from_sensor_data(front_time_warped_avg, right_time_warped_avg);
 %     order = 3;
 %     framelen = 11;
@@ -42,6 +44,9 @@ function chris_test1
 %     load('denoised_front_sensor_segment.mat');
 %     load('denoised_right_sensor_segment.mat');
 %     
+
+    [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, 550, 550);
+    
     figure;
     subplot(2,1,1);
     plot(front_time_warped_avg);
@@ -52,6 +57,9 @@ function chris_test1
     plot(right_time_warped_avg);
     xlabel('time');
     ylabel('right sensor measurement');
+    
+    figure;
+    scatter(x_border_positions,y_border_positions);
 %     
 %     [dist,ix,iy] = dtw(denoised_front_sensor_segment, denoised_right_sensor_segment, 'absolute');
 %     dtw(denoised_front_sensor_segment, denoised_right_sensor_segment, 'absolute');
@@ -72,29 +80,49 @@ function [data_segments, landmarks_per_seg] = segment_data(data, landmarks)
     end
 end
 
-function [time_warped_avg, new_sampling_rate, new_landmarks] = time_warpping(data_segments, fs, landmarks)
+
+function time_warped_avg = time_warpping(data_segments, landmarks)
     weight = 1; % weight for averaging. initially 1
     seg1 = data_segments{1};
     for iter = 2:length(data_segments)
         seg2 = data_segments{iter};
-%         seg1 = wdenoise(seg1,9,'NoiseEstimate','LevelIndependent');
-%         seg2 = wdenoise(seg2,9,'NoiseEstimate','LevelIndependent');
-%         seg1 = wdenoise(seg1); % denoise signal using wavelet
-%         seg2 = wdenoise(seg2); % denoise signal using wavelet
+        
         [~,ix,iy] = dtw(seg1,seg2);
         time_warped_seg1 = seg1(ix); % time warp the first segment
         time_warped_seg2 = seg2(iy); % time warp the second segment
         avg_waveform = (time_warped_seg1*weight + time_warped_seg2)/(weight+1); % compute average
         
         weight = weight + 1; % increment weight
-        fs = length(time_warped_seg1)/length(seg1)*fs; % update sampling rate
         seg1 = avg_waveform;
-        landmarks = update_landmark_loc(landmarks, iter-1, ix);
     end
     time_warped_avg = avg_waveform;
-    new_sampling_rate = fs;
-    new_landmarks = landmarks;
 end
+
+
+% 
+% function [time_warped_avg, new_sampling_rate, new_landmarks] = time_warpping(data_segments, fs, landmarks)
+%     weight = 1; % weight for averaging. initially 1
+%     seg1 = data_segments{1};
+%     for iter = 2:length(data_segments)
+%         seg2 = data_segments{iter};
+% %         seg1 = wdenoise(seg1,9,'NoiseEstimate','LevelIndependent');
+% %         seg2 = wdenoise(seg2,9,'NoiseEstimate','LevelIndependent');
+% %         seg1 = wdenoise(seg1); % denoise signal using wavelet
+% %         seg2 = wdenoise(seg2); % denoise signal using wavelet
+%         [~,ix,iy] = dtw(seg1,seg2);
+%         time_warped_seg1 = seg1(ix); % time warp the first segment
+%         time_warped_seg2 = seg2(iy); % time warp the second segment
+%         avg_waveform = (time_warped_seg1*weight + time_warped_seg2)/(weight+1); % compute average
+%         
+%         weight = weight + 1; % increment weight
+%         fs = length(time_warped_seg1)/length(seg1)*fs; % update sampling rate
+%         seg1 = avg_waveform;
+%         landmarks = update_landmark_loc(landmarks, iter-1, ix);
+%     end
+%     time_warped_avg = avg_waveform;
+%     new_sampling_rate = fs;
+%     new_landmarks = landmarks;
+% end
 
 function new_landmarks = update_landmark_loc(landmarks, curr_turn, time_shift)
     num_landmarks = size(landmarks, 1);
