@@ -9,8 +9,8 @@ function [x_border_positions,y_border_positions] = generate_border_points(distan
     x_border_positions = [];
     y_border_positions = [];
     for idx = 1:length(distance)
-        x_border_positions = [x_border_positions, starting_position_x + distance(idx)*sind(degrees(idx))];
-        y_border_positions = [y_border_positions, starting_position_y + distance(idx)*cosd(degrees(idx))];
+        x_border_positions = [x_border_positions, starting_position_x + distance(idx)*cosd(degrees(idx))];
+        y_border_positions = [y_border_positions, starting_position_y + distance(idx)*sind(degrees(idx))];
     end
 %   figure
 %   scatter(x_border_positions,y_border_positions)

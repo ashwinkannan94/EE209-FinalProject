@@ -1,8 +1,8 @@
-[environment, env_size_x, env_size_y] = get_environment_from_image('square_map.png'); % load map from PNG
+[environment, env_size_x, env_size_y] = get_environment_from_image('2D_drawing2.png'); % load map from PNG
 
 % Robot's position (slight near the upper right corner)
-robot_pos_x = 550;
-robot_pos_y = 550;
+robot_pos_x = 700; %550;
+robot_pos_y = 600; %550;
 
 % Sensor rotation speed
 rotation_speed = 0.1; % degree per sample
