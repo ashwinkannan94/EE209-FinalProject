@@ -1,4 +1,4 @@
-function chris_test1 
+function ashwin_test
     clear all;
     close all;
     rng(2)
@@ -46,11 +46,10 @@ function chris_test1
     for iter = 1:length(front_data_segments)
         curr_front_seg = front_data_segments{iter};
         curr_right_seg = right_data_segments{iter};
-%         curr_front_seg = wdenoise(curr_front_seg);
-%         curr_right_seg = wdenoise(curr_right_seg);
+
         [degrees, distance] = get_degrees_from_sensor_data(curr_front_seg, curr_right_seg);
         [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, 550, 550);
-        disp(y_border_positions(1));
+
         figure;
         scatter(x_border_positions,y_border_positions);
         hold on;

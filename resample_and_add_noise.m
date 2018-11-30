@@ -14,7 +14,7 @@ function [new_sensor_data1, new_sensor_data2] = resample_and_add_noise(sensor_da
     end
     
     data_size = length(sensor_data1);
-    resample_scale = sin(linspace(-pi,pi,data_size));
+    resample_scale = sin(linspace(-1*pi,pi,data_size));
     resample_scale = resample_scale + 2;
     
     new_sensor_data1 = [];

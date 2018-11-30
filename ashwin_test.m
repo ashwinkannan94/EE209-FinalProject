@@ -1,4 +1,4 @@
-function chris_test1 
+function ashwin_test
     clear all;
     close all;
     rng(2)
@@ -46,35 +46,41 @@ function chris_test1
     for iter = 1:length(front_data_segments)
         curr_front_seg = front_data_segments{iter};
         curr_right_seg = right_data_segments{iter};
-%         curr_front_seg = wdenoise(curr_front_seg);
-%         curr_right_seg = wdenoise(curr_right_seg);
+
         [degrees, distance] = get_degrees_from_sensor_data(curr_front_seg, curr_right_seg);
         [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, 550, 550);
-        disp(y_border_positions(1));
+
         figure;
-        scatter(x_border_positions,y_border_positions);
+        subplot(1,2,2);
+        scatter(x_border_positions,y_border_positions); % plot map from raw data
         hold on;
-        scatter(x_border_positions(1),y_border_positions(1),'filled','r');
+        scatter(x_border_positions(1),y_border_positions(1),'filled','r'); % plot the starting point
         
+        % denoise the distance after computing orientation and distance
         distance = wdenoise(distance);
         [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, 550, 550);
         p1 = plot(x_border_positions,y_border_positions,'.m');
         
+        % denoise sensor data and then compute orientation and distance
         curr_front_seg_d = wdenoise(curr_front_seg);
         curr_right_seg_d = wdenoise(curr_right_seg);
         [degrees, distance] = get_degrees_from_sensor_data(curr_front_seg_d, curr_right_seg_d);
         [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, 550, 550);
-%         scatter(x_border_positions,y_border_positions,'filled','g','MarkerFaceAlpha',.2,'size',1);
         p2 = plot(x_border_positions,y_border_positions,'.g');
         p1.Color(4) = 0.2;
         p2.Color(4) = 0.2;
+        pbaspect([1 1 1])
+%         legend('Noisy data', 'Start Point', 'Denoised Distance', 'Denoised Data');
+        title('Generated Map');
         hold off;
         
-        figure;
+        subplot(1,2,1); 
         plot(curr_front_seg);
         hold on;
         plot(curr_right_seg);
         hold off;
+        pbaspect([1 1 1])
+        title('Current Data Segment');
         if iter == 1
             avg_degrees = degrees;
             avg_distance = distance;
