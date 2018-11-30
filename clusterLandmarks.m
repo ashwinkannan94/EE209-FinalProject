@@ -4,8 +4,8 @@ function [Y1, Y2] = clusterLandmarks(X1, X2)
 max_k = 10;
 
 % Pull out corner locations
-[peaks1, locs1, w1] = findpeaks(X1, 'MinPeakWidth', 20);
-[peaks2, locs2, w2] = findpeaks(X2, 'MinPeakWidth', 20);
+[peaks1, locs1, w1] = findpeaks(X1);
+[peaks2, locs2, w2] = findpeaks(X2);
 peaks1 = peaks1.';
 peaks2 = peaks2.';
 
