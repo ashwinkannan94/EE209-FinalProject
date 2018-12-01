@@ -62,7 +62,6 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
     intersect_y = [];
     intersect_x = [];
     
-    tic();
     for i = 1:length(x)
         curr_x = round(x(i));
         curr_y = y(i);
@@ -74,7 +73,6 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
             intersect_x = [intersect_x, curr_x];
         end
     end
-    toc()
     
 %     ref_x = round(x);
 % %     same_x_idx = find(ref_x, env_x);
