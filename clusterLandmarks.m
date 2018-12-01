@@ -1,11 +1,17 @@
-function [Y1, Y2] = clusterLandmarks(X1, X2)
+function [front_landmarks, right_landmarks] = clusterLandmarks(front_sensor_data, right_sensor_data)
+
+% Denoise Sensor Data
+fc = 100;
+[b,a] = butter(6,fc/(fs/2));
+denoised_front_sensor_data = filtfilt(b,a,front_sensor_data);
+denoised_right_sensor_data = filtfilt(b,a,right_sensor_data);
 
 % No more than 10 landmarks/corners
 max_k = 10;
 
 % Pull out corner locations
-[peaks1, locs1, w1] = findpeaks(X1);
-[peaks2, locs2, w2] = findpeaks(X2);
+[peaks1, locs1, w1] = findpeaks(denoised_front_sensor_data);
+[peaks2, locs2, w2] = findpeaks(denoised_right_sensor_data);
 peaks1 = peaks1.';
 peaks2 = peaks2.';
 
@@ -80,8 +86,8 @@ end
 
 
 
-Y1 = zeros(cluster_max, ceil(size(peaks,1)/(cluster_max-1)));
-Y2 = zeros(cluster_max, ceil(size(peaks,1)/(cluster_max-1)));
+front_landmarks = zeros(cluster_max, ceil(size(peaks,1)/(cluster_max-1)));
+right_landmarks = zeros(cluster_max, ceil(size(peaks,1)/(cluster_max-1)));
 
 
 
@@ -89,11 +95,11 @@ for i = 1:cluster_max
     
     locs = locs1(idx1 == i);
     num_locs = size(locs,2);
-    Y1(i,1:num_locs) = locs;
+    front_landmarks(i,1:num_locs) = locs;
     
     locs = locs2(idx2 == i);
     num_locs = size(locs,2);
-    Y2(i, 1:num_locs) = locs.';
+    right_landmarks(i, 1:num_locs) = locs.';
     
 end
 

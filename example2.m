@@ -8,14 +8,8 @@ function example2
     load('right_sensor_data_ex2.mat');
     [front_sensor_data, right_sensor_data] = resample_and_add_noise(front_sensor_data, right_sensor_data);
     
-    %% Low pass filter sensor data to denoise
-    fc = 100;
-    [b,a] = butter(6,fc/(fs/2));
-    denoised_front_sensor_data = filtfilt(b,a,front_sensor_data);
-    denoised_right_sensor_data = filtfilt(b,a,right_sensor_data);
-
     %% Find landmarks in sensor data
-    [front_landmarks, right_landmarks] = clusterLandmarks(denoised_front_sensor_data, denoised_right_sensor_data);
+    [front_landmarks, right_landmarks] = clusterLandmarks(front_sensor_data, right_sensor_data);
     front_landmarks = front_landmarks(:,any(front_landmarks)); % remove columns with zeros
     right_landmarks = right_landmarks(:,any(right_landmarks)); % remove columns with zeros
 
