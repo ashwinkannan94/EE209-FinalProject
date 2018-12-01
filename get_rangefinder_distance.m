@@ -21,6 +21,13 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
         max_x = min((env_size_y-y_intercept)/slope, env_size_x); % if the slope is too steep, the max x is limited
         x = linspace(pos_x, max_x, env_size_x-pos_x+1);
         y = slope*x + y_intercept;
+        
+        x_greater = env_x > pos_x;
+        y_greater = env_y >= pos_y;
+        idx = find(and(x_greater, y_greater));
+        env_x = env_x(idx);
+        env_y = env_y(idx);
+        
     elseif sensor_angle == 90 % if the sensor is facing straight up
         y = (pos_y: env_size_y);
         x = pos_x*ones(length(y),1)';
@@ -30,12 +37,24 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
         min_x = max((env_size_y-y_intercept)/slope, 1); % if the slope is too steep, the max x is limited
         x = linspace(min_x, pos_x, pos_x);
         y = slope*x + y_intercept;
+        
+        x_less = env_x < pos_x;
+        y_greater = env_y >= pos_y;
+        idx = find(and(x_less, y_greater));
+        env_x = env_x(idx);
+        env_y = env_y(idx);
+        
     elseif sensor_angle > 180 && sensor_angle < 270
         slope = tan(theta*pi/180);
         y_intercept = (pos_y - slope*pos_x);
         min_x = max((1-y_intercept)/slope, 1); % if the slope is too steep, the max x is limited
         x = linspace(min_x, pos_x, pos_x);
         y = slope*x + y_intercept;
+        x_less = env_x < pos_x;
+        y_less = env_y < pos_y;
+        idx = find(and(x_less, y_less));
+        env_x = env_x(idx);
+        env_y = env_y(idx);
     elseif sensor_angle == 270 % if the sensor is facing straight down
         y = (1: pos_y);
         x = pos_x*ones(length(y),1)';
@@ -45,6 +64,12 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
         max_x = min((1-y_intercept)/slope, env_size_x); % if the slope is too steep, the max x is limited
         x = linspace(pos_x, max_x, env_size_x-pos_x+1);
         y = slope*x + y_intercept;
+        
+        x_greater = env_x > pos_x;
+        y_less = env_y < pos_y;
+        idx = find(and(x_greater, y_less));
+        env_x = env_x(idx);
+        env_y = env_y(idx);
     end
                         
     %% get the cross point
