@@ -24,6 +24,7 @@ parfor theta1 = 1:3600 % just one turn
     % random rotation speed
 %     rotation_speed = randi(30); % between 1 and 10 degree per sample
 end
+
 toc()
 right_sensor_data = [front_sensor_data(end-199:end),front_sensor_data(1:end-200)];
 
