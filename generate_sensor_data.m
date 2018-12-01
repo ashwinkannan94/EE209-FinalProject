@@ -13,7 +13,7 @@ right_sensor_data = [];
 
 theta = 0;
 tic();
-    
+%get_rangefinder_distance(robot_pos_x, robot_pos_y, 2.4, environment, env_size_x, env_size_y);
 parfor theta1 = 1:3600 % just one turn
     theta = theta1/10;
     if mod(theta,30) == 0 % print theta for every 30 degrees

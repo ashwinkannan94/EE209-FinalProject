@@ -92,7 +92,7 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
 %     intersect_y = env_y(row(below_threshold_idx));
 %     intersect_y = [];
 %     intersect_x = [];
-    
+%     
 %     for i = 1:length(x)
 %         curr_x = round(x(i));
 %         curr_y = y(i);
@@ -107,18 +107,40 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
     
     intersect_y = [];
     intersect_x = [];
+    x_used = [];
     i = 1;
     while i < length(x)
         curr_x = round(x(i));
-        curr_y = y(i);
+        x_used = [x_used, curr_x];
+        if curr_x == 1036
+            1;
+        end
+        curr_y = round(y(i));
         same_x_idx = find(env_x==curr_x); % find the same X values from the environment
+        same_y_idx = find(env_y == curr_y);
+        corres_x = env_x(same_y_idx);
         corres_y = env_y(same_x_idx); % corresponding y values of the environment
-        [min_diff, min_diff_idx] = min(abs(corres_y-curr_y));
-        if isempty(min_diff)
+        [min_diff_y, min_diff_y_idx] = min(abs(corres_y-curr_y));
+        [min_diff_x, min_diff_x_idx] = min(abs(corres_x-curr_x));
+        
+        
+        if isempty([min_diff_x, min_diff_y])
             i = i + 1;
             continue;
         end
-        diffs = corres_y-curr_y;
+        
+        if min_diff_x < min_diff_y
+            min_diff = min_diff_x;
+            min_diff_idx = min_diff_x_idx;
+            diffs = corres_x - curr_x;
+            diff_from_x = 1;
+        else
+            min_diff = min_diff_y;
+            min_diff_idx = min_diff_y_idx;
+            diffs = corres_y - curr_y;
+            diff_from_x = 0;
+        end
+        
         step_size = round(diffs(min_diff_idx)/10);
         if step_size > 0
             i = i + step_size;
@@ -126,8 +148,13 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
             i = i + 1;
 
             if min_diff <= 1 % if the difference is only up to 1,
-                intersect_y = [intersect_y, corres_y(min_diff_idx)];
-                intersect_x = [intersect_x, curr_x];
+                if diff_from_x
+                    intersect_y = [intersect_y, curr_y];
+                    intersect_x = [intersect_x, corres_x(min_diff_idx)];
+                else
+                    intersect_y = [intersect_y, corres_y(min_diff_idx)];
+                    intersect_x = [intersect_x, curr_x];
+                end
             end
         end
     end
