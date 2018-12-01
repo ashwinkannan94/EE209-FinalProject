@@ -12,6 +12,7 @@ front_sensor_data = [];
 right_sensor_data = [];
 
 theta = 0;
+tic
 while theta < 360 % just one turn
     if mod(theta,30) == 0 % print theta for every 30 degrees
         disp(theta);
@@ -26,6 +27,7 @@ while theta < 360 % just one turn
 %     rotation_speed = randi(30); % between 1 and 10 degree per sample
     theta = theta + rotation_speed;
 end
+toc
 
 front_sensor_data = [front_sensor_data, front_sensor_data, front_sensor_data, front_sensor_data, front_sensor_data, front_sensor_data];
 right_sensor_data = [right_sensor_data, right_sensor_data, right_sensor_data, right_sensor_data, right_sensor_data, right_sensor_data];

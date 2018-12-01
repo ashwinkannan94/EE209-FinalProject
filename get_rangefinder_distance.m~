@@ -52,45 +52,39 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
 % %     same_x_idx = find(ref_x, env_x);
 %     [~,same_x_idx] = ismember(ref_x, env_x);
 
-    intersect_y = [];
-    intersect_x = [];
-    for i = 1:length(x)
-        curr_x = round(x(i));
-        curr_y = y(i);
-        same_x_idx = find(env_x==curr_x); % find the same X values from the environment
-        corres_y = env_y(same_x_idx); % corresponding y values of the environment
-        [min_diff, min_diff_idx] = min(abs(corres_y-curr_y));
-        if min_diff <= 1 % if the difference is only up to 1,
-            intersect_y = [intersect_y, corres_y(min_diff_idx)];
-            intersect_x = [intersect_x, curr_x];
-        end
-    end
-    
 %     intersect_y = [];
 %     intersect_x = [];
-%     i = 1;
-%     while i < length(x)
+%     for i = 1:length(x)
 %         curr_x = round(x(i));
 %         curr_y = y(i);
 %         same_x_idx = find(env_x==curr_x); % find the same X values from the environment
 %         corres_y = env_y(same_x_idx); % corresponding y values of the environment
 %         [min_diff, min_diff_idx] = min(abs(corres_y-curr_y));
-%         if isempty(min_diff)
-%             i = i + 1;
-%             continue;
-%         end
-%         diffs = corres_y-curr_y;
-%         step_size = round(diffs(min_diff_idx)/10);
-%         if step_size > 0
-%             i = i + step_size;
-%         else
-%             i = i + 1;
-%         
 %         if min_diff <= 1 % if the difference is only up to 1,
 %             intersect_y = [intersect_y, corres_y(min_diff_idx)];
 %             intersect_x = [intersect_x, curr_x];
 %         end
 %     end
+    
+    intersect_y = [];
+    intersect_x = [];
+    i = 0;
+    while i < length(x)
+        curr_x = round(x(i));
+        curr_y = y(i);
+        same_x_idx = find(env_x==curr_x); % find the same X values from the environment
+        corres_y = env_y(same_x_idx); % corresponding y values of the environment
+        [min_diff, min_diff_idx] = min(abs(corres_y-curr_y));
+        if isempty(min_diff)
+            continue;
+        end
+        
+        
+        if min_diff <= 1 % if the difference is only up to 1,
+            intersect_y = [intersect_y, corres_y(min_diff_idx)];
+            intersect_x = [intersect_x, curr_x];
+        end
+    end
     
 %     ref_x = round(x);
 % %     same_x_idx = find(ref_x, env_x);
