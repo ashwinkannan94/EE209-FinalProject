@@ -48,8 +48,21 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
     end
                         
     %% get the cross point
+    
+%     tic();
+%     rounded_x = round(x);
+%     boolean_matrix = (env_x == rounded_x);
+%     [row, col] = find(boolean_matrix);
+%     distances = abs(env_y(row) - y(col).');
+%     below_threshold_idx = find(distances <= 1);
+%     intersect_x = env_x(row(below_threshold_idx));
+%     intersect_y = env_y(row(below_threshold_idx));
+%     toc()
+    
     intersect_y = [];
     intersect_x = [];
+    
+    tic();
     for i = 1:length(x)
         curr_x = round(x(i));
         curr_y = y(i);
@@ -61,6 +74,7 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
             intersect_x = [intersect_x, curr_x];
         end
     end
+    toc()
     
 %     ref_x = round(x);
 % %     same_x_idx = find(ref_x, env_x);
