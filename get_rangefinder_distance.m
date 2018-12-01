@@ -73,13 +73,6 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
     end
                         
     %% get the cross point
-<<<<<<< HEAD
-%     ref_x = round(x);
-% %     same_x_idx = find(ref_x, env_x);
-%     [~,same_x_idx] = ismember(ref_x, env_x);
-
-=======
-    
 %     tic();
 %     rounded_x = round(x);
 %     boolean_matrix = (env_x == rounded_x);
@@ -89,8 +82,6 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
 %     intersect_x = env_x(row(below_threshold_idx));
 %     intersect_y = env_y(row(below_threshold_idx));
 %     toc()
-    
->>>>>>> f4f3d274c1fc09466a0717782fc40bbbe548031e
     intersect_y = [];
     intersect_x = [];
     
