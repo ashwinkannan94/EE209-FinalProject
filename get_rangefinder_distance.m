@@ -15,14 +15,24 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
     env_y = environment(:,2);
     
     sensor_angle = mod(theta, 360);
-    if sensor_angle >= 0 && sensor_angle < 90
+    if sensor_angle == 0
+        
+        max_x = env_size_x;
+        x = linspace(pos_x, max_x, env_size_x-pos_x+1);
+        y = pos_y*ones(1,length(x));
+        x_greater = env_x >= pos_x;
+        idx = find(x_greater);
+        env_x = env_x(idx);
+        env_y = env_y(idx);
+        
+    elseif sensor_angle >= 0 && sensor_angle < 90
         slope = tan(theta*pi/180);
         y_intercept = (pos_y - slope*pos_x);
         max_x = min((env_size_y-y_intercept)/slope, env_size_x); % if the slope is too steep, the max x is limited
         x = linspace(pos_x, max_x, env_size_x-pos_x+1);
         y = slope*x + y_intercept;
         
-        x_greater = env_x > pos_x;
+        x_greater = env_x >= pos_x;
         y_greater = env_y >= pos_y;
         idx = find(and(x_greater, y_greater));
         env_x = env_x(idx);
@@ -38,7 +48,7 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
         x = linspace(min_x, pos_x, pos_x);
         y = slope*x + y_intercept;
         
-        x_less = env_x < pos_x;
+        x_less = env_x <= pos_x;
         y_greater = env_y >= pos_y;
         idx = find(and(x_less, y_greater));
         env_x = env_x(idx);
@@ -50,8 +60,8 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
         min_x = max((1-y_intercept)/slope, 1); % if the slope is too steep, the max x is limited
         x = linspace(min_x, pos_x, pos_x);
         y = slope*x + y_intercept;
-        x_less = env_x < pos_x;
-        y_less = env_y < pos_y;
+        x_less = env_x <= pos_x;
+        y_less = env_y <= pos_y;
         idx = find(and(x_less, y_less));
         env_x = env_x(idx);
         env_y = env_y(idx);
@@ -65,8 +75,8 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
         x = linspace(pos_x, max_x, env_size_x-pos_x+1);
         y = slope*x + y_intercept;
         
-        x_greater = env_x > pos_x;
-        y_less = env_y < pos_y;
+        x_greater = env_x >= pos_x;
+        y_less = env_y <= pos_y;
         idx = find(and(x_greater, y_less));
         env_x = env_x(idx);
         env_y = env_y(idx);
@@ -74,7 +84,6 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
                         
     %% get the cross point
     
-%     tic();
 %     rounded_x = round(x);
 %     boolean_matrix = (env_x == rounded_x);
 %     [row, col] = find(boolean_matrix);
@@ -82,7 +91,6 @@ function [distance, nearest_intersect_x, nearest_intersect_y, x, y] = get_rangef
 %     below_threshold_idx = find(distances <= 1);
 %     intersect_x = env_x(row(below_threshold_idx));
 %     intersect_y = env_y(row(below_threshold_idx));
-%     toc()
     
     intersect_y = [];
     intersect_x = [];
