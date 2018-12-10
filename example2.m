@@ -34,22 +34,22 @@ function example2
     plot(front_sensor_data);
     xlabel('Samples');
     ylabel('Original Front Sensor Data');
+    title('Original Sensor Data');
     subplot(2,1,2); 
     plot(right_sensor_data);
     xlabel('Samples');
-    ylabel('Original Front Sensor Data');
-    title('Original Sensor Data');
+    ylabel('Original Right Sensor Data');
     
     figure;
     subplot(2,1,1);
     plot(front_avg_data);
     xlabel('Samples');
     ylabel('Averaged Front Sensor Data');
+    title('Average Sensor Data');
     subplot(2,1,2); 
     plot(right_avg_data);
     xlabel('Samples');
-    ylabel('Averaged Front Sensor Data');
-    title('Average Sensor Data');
+    ylabel('Averaged Right Sensor Data');
     
     figure;
     scatter(x_border_positions,y_border_positions);

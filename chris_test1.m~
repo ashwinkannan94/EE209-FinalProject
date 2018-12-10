@@ -11,21 +11,13 @@ function test_metric
     [environment, env_size_x, env_size_y, image_matrix2] = get_environment_from_image('square_map.png', scale_factor);
     
     [x, y] = generate_map;
-    x = round(x);
-    y = round(y);
-    max_y = max(y);
-    max_x = max(x);
-    map = zeros(max_y,max_x)+255;
     
-    for row = 1:max_y
-        for col = 1:max_x
+    map = zeros(max(y),max(x));
+    
+    for row = 1:max(y)
+        for col = 1:max(x)
             if ismember(row,y) && ismember(col,x)
-                map(row,col) = 0;
-            end
-        end
-    end
-    
-    c = xcorr2(image_matrix1,map);
+                map(row,col) = 1
 %     RGB_image = imread('2d_drawing2.png');
 %     grayscale_image = rgb2gray(RGB_image);
 % 
@@ -47,12 +39,12 @@ function test_metric
     
 %     c = xcorr2(image_matrix_1);
     
-%     c1 = xcorr2(image_matrix1,image_matrix1);
-%     c2 = xcorr2(image_matrix1,image_matrix2);
-%     
-%     surf(c1, 'EdgeColor', 'none');
-%     figure
-%     surf(c2, 'EdgeColor', 'none');
+    c1 = xcorr2(image_matrix1,image_matrix1);
+    c2 = xcorr2(image_matrix1,image_matrix2);
+    
+    surf(c1, 'EdgeColor', 'none');
+    figure
+    surf(c2, 'EdgeColor', 'none');
 end
 
 function test_all
@@ -175,39 +167,39 @@ function test_all
 %     [dist,ix,iy] = dtw(denoised_front_sensor_segment, denoised_right_sensor_segment, 'absolute');
 %     dtw(denoised_front_sensor_segment, denoised_right_sensor_segment, 'absolute');
 end
-% 
-% function [data_segments, landmarks_per_seg] = segment_data(data, landmarks)
-%     seg_ref_loc = landmarks(1,:);
-%     landmarks_per_seg = []; % adjust landmark location for each segment
-%     data_segments = {};
-%     for iter = 1:length(seg_ref_loc)-1
-%         start_idx = seg_ref_loc(iter);
-%         end_idx = seg_ref_loc(iter+1);
-%         curr_seg = data(start_idx:end_idx);
-%         data_segments{end+1} = curr_seg;
-%         for landmark_idx = 1:size(landmarks, 1)
-%             landmarks_per_seg(landmark_idx, iter) = landmarks(landmark_idx, iter) - start_idx + 1;
-%         end
-%     end
-% end
-% 
-% 
-% function time_warped_avg = time_warpping(data_segments, landmarks)
-%     weight = 1; % weight for averaging. initially 1
-%     seg1 = data_segments{1};
-%     for iter = 2:length(data_segments)
-%         seg2 = data_segments{iter};
-%         
-%         [~,ix,iy] = dtw(seg1,seg2);
-%         time_warped_seg1 = seg1(ix); % time warp the first segment
-%         time_warped_seg2 = seg2(iy); % time warp the second segment
-%         avg_waveform = (time_warped_seg1*weight + time_warped_seg2)/(weight+1); % compute average
-%         
-%         weight = weight + 1; % increment weight
-%         seg1 = avg_waveform;
-%     end
-%     time_warped_avg = avg_waveform;
-% end
+
+function [data_segments, landmarks_per_seg] = segment_data(data, landmarks)
+    seg_ref_loc = landmarks(1,:);
+    landmarks_per_seg = []; % adjust landmark location for each segment
+    data_segments = {};
+    for iter = 1:length(seg_ref_loc)-1
+        start_idx = seg_ref_loc(iter);
+        end_idx = seg_ref_loc(iter+1);
+        curr_seg = data(start_idx:end_idx);
+        data_segments{end+1} = curr_seg;
+        for landmark_idx = 1:size(landmarks, 1)
+            landmarks_per_seg(landmark_idx, iter) = landmarks(landmark_idx, iter) - start_idx + 1;
+        end
+    end
+end
+
+
+function time_warped_avg = time_warpping(data_segments, landmarks)
+    weight = 1; % weight for averaging. initially 1
+    seg1 = data_segments{1};
+    for iter = 2:length(data_segments)
+        seg2 = data_segments{iter};
+        
+        [~,ix,iy] = dtw(seg1,seg2);
+        time_warped_seg1 = seg1(ix); % time warp the first segment
+        time_warped_seg2 = seg2(iy); % time warp the second segment
+        avg_waveform = (time_warped_seg1*weight + time_warped_seg2)/(weight+1); % compute average
+        
+        weight = weight + 1; % increment weight
+        seg1 = avg_waveform;
+    end
+    time_warped_avg = avg_waveform;
+end
 
 
 % 
