@@ -2,6 +2,7 @@ function [front_landmarks, right_landmarks] = clusterLandmarks(front_sensor_data
 
 % Denoise Sensor Data
 fc = 100;
+fs = 14000; % 14kHz
 [b,a] = butter(6,fc/(fs/2));
 denoised_front_sensor_data = filtfilt(b,a,front_sensor_data);
 denoised_right_sensor_data = filtfilt(b,a,right_sensor_data);
