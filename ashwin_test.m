@@ -14,12 +14,12 @@ function ashwin_test
     
 %     plot(new_sensor_data1);
     
-    fc = 100;
-    [b,a] = butter(6,fc/(fs/2));
-    denoised_front_sensor_data = filtfilt(b,a,front_sensor_data);
-    denoised_right_sensor_data = filtfilt(b,a,right_sensor_data);
+%     fc = 100;
+%     [b,a] = butter(6,fc/(fs/2));
+%     denoised_front_sensor_data = filtfilt(b,a,front_sensor_data);
+%     denoised_right_sensor_data = filtfilt(b,a,right_sensor_data);
 
-    [front_landmarks, right_landmarks] = clusterLandmarks(denoised_front_sensor_data, denoised_right_sensor_data);
+    [front_landmarks, right_landmarks] = clusterLandmarks(front_sensor_data, right_sensor_data);
     
     front_landmarks = front_landmarks(:,any(front_landmarks));
     right_landmarks = right_landmarks(:,any(right_landmarks));
@@ -42,6 +42,8 @@ function ashwin_test
     %}
     avg_degrees = [];
     avg_distance = [];
+    x_borders = {};
+    y_borders = {};
     weight = 1;
     for iter = 1:length(front_data_segments)
         curr_front_seg = front_data_segments{iter};
@@ -49,49 +51,55 @@ function ashwin_test
 
         [degrees, distance] = get_degrees_from_sensor_data(curr_front_seg, curr_right_seg);
         [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, 550, 550);
-
-        figure;
-        subplot(1,2,2);
-        scatter(x_border_positions,y_border_positions); % plot map from raw data
-        hold on;
-        scatter(x_border_positions(1),y_border_positions(1),'filled','r'); % plot the starting point
+        
+        
+%         scatter(x_border_positions,y_border_positions); % plot map from raw data
+%         hold on;
+%         scatter(x_border_positions(1),y_border_positions(1),'filled','r'); % plot the starting point
+%         saveas(figure1,'image2.jpg')
         
         % denoise the distance after computing orientation and distance
-        distance = wdenoise(distance);
-        [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, 550, 550);
-        p1 = plot(x_border_positions,y_border_positions,'.m');
+%         distance = wdenoise(distance);
+%         [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, 550, 550);
+%         p1 = plot(x_border_positions,y_border_positions,'.m');
+%         hold on;
         
-        % denoise sensor data and then compute orientation and distance
-        curr_front_seg_d = wdenoise(curr_front_seg);
-        curr_right_seg_d = wdenoise(curr_right_seg);
-        [degrees, distance] = get_degrees_from_sensor_data(curr_front_seg_d, curr_right_seg_d);
-        [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, 550, 550);
-        p2 = plot(x_border_positions,y_border_positions,'.g');
-        p1.Color(4) = 0.2;
-        p2.Color(4) = 0.2;
-        pbaspect([1 1 1])
-%         legend('Noisy data', 'Start Point', 'Denoised Distance', 'Denoised Data');
-        title('Generated Map');
-        hold off;
-        
-        subplot(1,2,1); 
-        plot(curr_front_seg);
-        hold on;
-        plot(curr_right_seg);
-        hold off;
-        pbaspect([1 1 1])
-        title('Current Data Segment');
-        if iter == 1
-            avg_degrees = degrees;
-            avg_distance = distance;
-        else
-            resampled_degrees = resample(degrees, length(avg_degrees), length(degrees));
-            resampled_distance = resample(distance, length(avg_distance), length(distance));
-            avg_degrees = (avg_degrees*weight+resampled_degrees)/(weight+1);
-            avg_distance = (avg_distance*weight+resampled_distance)/(weight+1);
-            weight = weight+1;
-        end
+%        
+%         % denoise sensor data and then compute orientation and distance
+          curr_front_seg_d = wdenoise(curr_front_seg);
+          curr_right_seg_d = wdenoise(curr_right_seg);
+          [degrees, distance] = get_degrees_from_sensor_data(curr_front_seg_d, curr_right_seg_d);
+%           [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, 550, 550);
+%           p2 = plot(x_border_positions,y_border_positions,'.k');
+%           axis off;
+%           p1.Color(4) = 0.2;
+%           p2.Color(4) = 0.2;
+%           pbaspect([1 1 1])
+%           legend('Noisy data', 'Start Point', 'Denoised Distance', 'Denoised Data');
+          x_borders{end+1} = x_border_positions;
+          y_borders{end+1} = y_border_positions;
+%         hold off;
+%         
+%         subplot(1,2,1); 
+%         plot(curr_front_seg);
+%         hold on;
+%         plot(curr_right_seg);
+%         hold off;
+%         pbaspect([1 1 1])
+%         title('Current Data Segment');
+%         if iter == 1
+%             avg_degrees = degrees;
+%             avg_distance = distance;
+%         else
+%             resampled_degrees = resample(degrees, length(avg_degrees), length(degrees));
+%             resampled_distance = resample(distance, length(avg_distance), length(distance));
+%             avg_degrees = (avg_degrees*weight+resampled_degrees)/(weight+1);
+%             avg_distance = (avg_distance*weight+resampled_distance)/(weight+1);
+%             weight = weight+1;
+%         end
     end    
+    
+    
     
     distance = avg_distance;
     degrees = avg_degrees;
@@ -125,7 +133,42 @@ function ashwin_test
 %     
 %     [dist,ix,iy] = dtw(denoised_front_sensor_segment, denoised_right_sensor_segment, 'absolute');
 %     dtw(denoised_front_sensor_segment, denoised_right_sensor_segment, 'absolute');
-end
+    [x_rotated, y_rotated] = find_rotation_between_maps(x_borders, y_borders);
+    allX = [];
+    for k = 1:numel(x_rotated)
+        allX = [allX,x_rotated{k}];
+    end
+    allY = [];
+    for k = 1:numel(y_rotated)
+        allY = [allY,y_rotated{k}];
+    end
+    
+    for k = 1:numel(x_rotated)
+        k
+        figure;
+        x_positions = x_rotated{k};
+        y_positions = y_rotated{k};
+        plot(x_positions,y_positions,'.k')
+        axis off;
+    end
+%     im = DataDensityPlot(allY, allX, 2400);
+    
+    FolderName = 'tempdir';   % Your destination folder
+    FigList = findobj(allchild(0), 'flat', 'Type', 'figure');
+    for k = 1:length(FigList)
+        baseFileName = sprintf('figure_%d.jpg',k);
+        fullFileName = fullfile('tempdir', baseFileName);
+        saveas(figure(k), fullFileName)
+    end
+    mean_image = read_images_and_return_average_image;
+    image = mean_image(:, :, 1);
+    image_thresholded = image;
+    image_thresholded(image>202) = 256;
+%     image_thresholded(image<202) = 0;
+    figure;
+    
+    imshow(image_thresholded(:, :, 1),[0 255])
+    endx
 
 function [data_segments, landmarks_per_seg] = segment_data(data, landmarks)
     seg_ref_loc = landmarks(1,:);
@@ -194,4 +237,48 @@ function new_landmarks = update_landmark_loc(landmarks, curr_turn, time_shift)
         curr_landmark = landmarks(curr_landmark_idx, curr_turn);
         new_landmarks(curr_landmark_idx, curr_turn) = round(mean(find(time_shift==curr_landmark)));
     end  
+end
+
+function [x_rotated, y_rotated] = find_rotation_between_maps(x_borders, y_borders)
+    x_values_1 = x_borders{1};
+    y_values_1 = y_borders{1};
+    x_rotated = {}
+    y_rotated = {}
+    x_rotated{end+1} = x_values_1;
+    y_rotated{end+1} = y_values_1;
+    for i=2:length(x_borders)
+        x_values_2 = x_borders{i};
+        y_values_2 = y_borders{i};
+        model = [x_values_1;y_values_1];
+        data = [x_values_2; y_values_2];
+        [RotMat,TransVec,dataOut]=icp(model,data);
+        x_rotated{end+1} = dataOut(1,:);
+        y_rotated{end+1} = dataOut(2,:);
+%         figure(6)
+%         plot(model(1,:),model(2,:),'r.',dataOut(1,:),dataOut(2,:),'b.'), axis equal
+%         hold on
+    end
+end
+
+function mean_image = read_images_and_return_average_image
+    images = {};
+    directory = 'tempdir';
+    data = dir(fullfile(directory, '*.jpg'));
+    sum_image = 0;
+    for k = 1:numel(data)
+        F = fullfile(directory,data(k).name);
+        I = imread(F);
+        I_gray = rgb2gray(I);
+        sum_image = sum_image + double(I_gray);
+        images{k} = I_gray;
+    end
+    mean_image = sum_image/numel(images);
+%     sum_image = double(imread(images{1}));
+%     for i = 2:numel(images)
+%         image = imread(images{i});
+%         sum_image = sum_image + double(image);
+%     end
+    
+end
+
 end
