@@ -10,6 +10,29 @@ function main_routine
         x_borders{end+1} = x_border_positions;
         y_borders{end+1} = y_border_positions;
     end
+    [x_rotated, y_rotated] = find_rotation_between_maps(x_borders, y_borders);
+    for k = 1:numel(x_rotated)
+        figure;
+        x_positions = x_rotated{k};
+        y_positions = y_rotated{k};
+        plot(x_positions,y_positions,'.k')
+        axis off;
+    end
+    FolderName = 'tempdir';   % Your destination folder
+    FigList = findobj(allchild(0), 'flat', 'Type', 'figure');
+    for k = 1:length(FigList)
+        baseFileName = sprintf('figure_%d.jpg',k);
+        fullFileName = fullfile('tempdir', baseFileName);
+        saveas(figure(k), fullFileName)
+    end
+    mean_image = read_images_and_return_average_image;
+    image = mean_image(:, :, 1);
+    image_thresholded = image;
+    image_thresholded(image>202) = 256;
+%     image_thresholded(image<202) = 0;
+    figure;
+    
+    imshow(image_thresholded(:, :, 1),[0 255])
 
 end
 
@@ -84,4 +107,40 @@ function [x_border_positions, y_border_positions] = call_this
     figure;
     scatter(x_border_positions,y_border_positions);
     title('Generated Map');
+end
+
+function [x_rotated, y_rotated] = find_rotation_between_maps(x_borders, y_borders)
+    x_values_1 = x_borders{1};
+    y_values_1 = y_borders{1};
+    x_rotated = {}
+    y_rotated = {}
+    x_rotated{end+1} = x_values_1;
+    y_rotated{end+1} = y_values_1;
+    for i=2:length(x_borders)
+        x_values_2 = x_borders{i};
+        y_values_2 = y_borders{i};
+        model = [x_values_1;y_values_1];
+        data = [x_values_2; y_values_2];
+        [RotMat,TransVec,dataOut]=icp(model,data);
+        x_rotated{end+1} = dataOut(1,:);
+        y_rotated{end+1} = dataOut(2,:);
+%         figure(6)
+%         plot(model(1,:),model(2,:),'r.',dataOut(1,:),dataOut(2,:),'b.'), axis equal
+%         hold on
+    end
+end
+
+function mean_image = read_images_and_return_average_image
+    images = {};
+    directory = 'tempdir';
+    data = dir(fullfile(directory, '*.jpg'));
+    sum_image = 0;
+    for k = 1:numel(data)
+        F = fullfile(directory,data(k).name);
+        I = imread(F);
+        I_gray = rgb2gray(I);
+        sum_image = sum_image + double(I_gray);
+        images{k} = I_gray;
+    end
+    mean_image = sum_image/numel(images);  
 end
