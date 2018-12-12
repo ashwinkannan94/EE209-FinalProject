@@ -1,12 +1,11 @@
 function [front_landmarks, right_landmarks] = clusterLandmarks(front_sensor_data, right_sensor_data)
 
 % Denoise Sensor Data
-fc = 80;
+fc = 40;
 fs = 14000; % 14kHz
 [b,a] = butter(6,fc/(fs/2));
 denoised_front_sensor_data = filtfilt(b,a,front_sensor_data);
 denoised_right_sensor_data = filtfilt(b,a,right_sensor_data);
-
 % No more than 10 landmarks/corners
 max_k = 10;
 
@@ -32,7 +31,7 @@ idx1 = idx(1:size(peaks1,1));
 idx2 = idx(size(peaks1,1)+1:end);
 
 %%% Periodicity Check %%%
-min_corners = 2;
+min_corners = 4;
 subsequence = [];
 
 % Start with a few entries in order to not find mini subsequence
@@ -43,7 +42,8 @@ end
 % If next sequence equals stored sequence, we have found it and can break
 j = min_corners + 1;
 while true
-    if isequal(subsequence, idx1(j:j+length(subsequence) - 1).')
+    if isequal(subsequence, idx1(j:j+length(subsequence) - 1).')  ...
+        || (sum(subsequence == idx1(j:j+length(subsequence) - 1).') == length(subsequence)-1)
         break;
     end
     subsequence = [subsequence, idx1(j)];
@@ -54,7 +54,7 @@ end
 %%% Separate Clusters Based on Periodicity %%%
 orig_subsequence = subsequence;
 cluster_max = max(subsequence);
-cluster_count = zeros(1,length(subsequence));
+cluster_count = zeros(1,max(subsequence));
 % Basically using a hash table to count cluster number in sequence. 
 % If a certain cluster is seen more than once, separate that one into 
 % new cluster
@@ -72,7 +72,7 @@ end
 %%% Update idx values %%%
 for i = 1:(length(idx1) - length(subsequence)+1)
    seq = idx1(i:i+length(subsequence)-1);
-   if sum(seq == subsequence.') == 3 || isequal(seq, orig_subsequence.')
+   if sum(seq == subsequence.') == length(subsequence)-1 || isequal(seq, orig_subsequence.')
        idx1(i:i+length(subsequence)-1) = subsequence;
    end
 end

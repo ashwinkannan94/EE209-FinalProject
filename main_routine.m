@@ -8,8 +8,8 @@ function main_routine
     
     x_borders = {};
     y_borders = {};
-    x_values_all = [175,175,160,125];
-    y_values_all = [100,100,80,80];
+    x_values_all = [175,160,250,200];
+    y_values_all = [100,105,80,150];
     for i = 1:length(x_values_all)
         [x_border_positions, y_border_positions] = original_main_routine(env_info, x_values_all(i),y_values_all(i));
         x_borders{end+1} = x_border_positions;
@@ -85,8 +85,8 @@ function [x_border_positions, y_border_positions] = original_main_routine(env_in
     
     %% Find landmarks in sensor data
     [front_landmarks, right_landmarks] = clusterLandmarks(front_sensor_data, right_sensor_data);
-    front_landmarks = front_landmarks(:,any(front_landmarks)); % remove columns with zeros
-    right_landmarks = right_landmarks(:,any(right_landmarks)); % remove columns with zeros
+    front_landmarks = front_landmarks(:,all(front_landmarks)); % remove columns with zeros
+    right_landmarks = right_landmarks(:,all(right_landmarks)); % remove columns with zeros
 
     %% Segment sensor data into 360 degree turns
     front_data_segments = segment_data(front_sensor_data, front_landmarks);
