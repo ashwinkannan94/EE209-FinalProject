@@ -2,14 +2,14 @@ function main_routine
     close all;
     dbstop if error;
     rng(2)
-    scale_factor = 0.2; % reduce size for faster computation
-    [env, env_size_x, env_size_y] = get_environment_from_image('2D_drawing2.png', scale_factor); % load map from PNG
+    scale_factor = 0.5; % reduce size for faster computation
+    [env, env_size_x, env_size_y] = get_environment_from_image('new_img.png', scale_factor); % load map from PNG
     env_info = {env, env_size_x, env_size_y};
     
     x_borders = {};
     y_borders = {};
-    x_values_all = [160,180,160,125];
-    y_values_all = [120,140,80,80];
+    x_values_all = [175,175,160,125];
+    y_values_all = [100,100,80,80];
     for i = 1:length(x_values_all)
         [x_border_positions, y_border_positions] = original_main_routine(env_info, x_values_all(i),y_values_all(i));
         x_borders{end+1} = x_border_positions;

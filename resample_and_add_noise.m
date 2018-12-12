@@ -3,7 +3,7 @@
 
 function [new_sensor_data1, new_sensor_data2] = resample_and_add_noise(sensor_data1, sensor_data2, rotation_uncertainty, sensor_noise)
     if nargin ~= 4
-        rotation_uncertainty = 2; % default maximum increase in rotation speed
+        rotation_uncertainty = 1; % default maximum increase in rotation speed
         sensor_noise = 0.03; % +- 3% noise
         if nargin == 0
             load('front_sensor_data.mat');
