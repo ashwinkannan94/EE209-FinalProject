@@ -2,6 +2,7 @@ function [environment, env_size_x, env_size_y, image_matrix] = get_environment_f
     %% Load image file as grayscale image
     RGB_image = imread(image_filename);
     grayscale_image = rgb2gray(RGB_image);
+%     imshow(grayscale_image)
 
     %% Convert to binary matrix
 %     grayscale_image(grayscale_image < 122) = 0; % set dark pixels to 0
@@ -20,6 +21,8 @@ function [environment, env_size_x, env_size_y, image_matrix] = get_environment_f
     image_matrix = bwmorph(binaryImage, 'skel', inf); % shrink thickness of lines
     image_matrix = image_matrix == 0;
     image_matrix = double(image_matrix);
+    
+%     imshow(image_matrix);
     
     x = [];
     y = [];

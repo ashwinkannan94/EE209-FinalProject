@@ -2,14 +2,20 @@ function main_routine
     close all;
     dbstop if error;
     rng(2)
+    scale_factor = 0.2; % reduce size for faster computation
+    [env, env_size_x, env_size_y] = get_environment_from_image('2D_drawing2.png', scale_factor); % load map from PNG
+    env_info = {env, env_size_x, env_size_y};
     
     x_borders = {};
     y_borders = {};
-    for i = 1:3
-        [x_border_positions, y_border_positions] = call_this;
+    x_values_all = [160,180,160,125];
+    y_values_all = [120,140,80,80];
+    for i = 1:length(x_values_all)
+        [x_border_positions, y_border_positions] = original_main_routine(env_info, x_values_all(i),y_values_all(i));
         x_borders{end+1} = x_border_positions;
         y_borders{end+1} = y_border_positions;
     end
+    % move to a new location and call 8-10 again
     [x_rotated, y_rotated] = find_rotation_between_maps(x_borders, y_borders);
     for k = 1:numel(x_rotated)
         figure;
@@ -74,14 +80,7 @@ function time_warped_avg = avg_waveforms_thru_time_warp(data_segments)
     time_warped_avg = avg_waveform;
 end
 
-function [x_border_positions, y_border_positions] = call_this
-    scale_factor = 0.2; % reduce size for faster computation
-    initial_x = 700*scale_factor;
-    initial_y = 600*scale_factor;
-    [env, env_size_x, env_size_y] = get_environment_from_image('2D_drawing2.png', scale_factor); % load map from PNG
-    
-    env_info = {env, env_size_x, env_size_y};
-    
+function [x_border_positions, y_border_positions] = original_main_routine(env_info, initial_x, initial_y)
     [front_sensor_data, right_sensor_data] = get_noisy_sensor_data(initial_x, initial_y, env_info);
     
     %% Find landmarks in sensor data

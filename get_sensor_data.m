@@ -6,7 +6,7 @@ function [front_sensor_data, right_sensor_data] = get_sensor_data(robot_pos_x, r
     
     front_sensor_data = zeros(1,360*1/rotation_speed);
 
-    parfor theta1 = 1:(360/rotation_speed) % just one turn
+    for theta1 = 1:(360/rotation_speed) % just one turn
         theta = theta1*rotation_speed;
         if mod(theta,30) == 0 % print theta for every 30 degrees
             disp(theta);
