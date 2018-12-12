@@ -3,38 +3,13 @@ function main_routine
     dbstop if error;
     rng(2)
     
-    scale_factor = 0.2; % reduce size for faster computation
-    initial_x = 700*scale_factor;
-    initial_y = 600*scale_factor;
-    [env, env_size_x, env_size_y] = get_environment_from_image('2D_drawing2.png', scale_factor); % load map from PNG
-    
-    env_info = {env, env_size_x, env_size_y};
-    
-    [front_sensor_data, right_sensor_data] = get_noisy_sensor_data(initial_x, initial_y, env_info);
-    
-    %% Find landmarks in sensor data
-    [front_landmarks, right_landmarks] = clusterLandmarks(front_sensor_data, right_sensor_data);
-    front_landmarks = front_landmarks(:,any(front_landmarks)); % remove columns with zeros
-    right_landmarks = right_landmarks(:,any(right_landmarks)); % remove columns with zeros
-
-    %% Segment sensor data into 360 degree turns
-    front_data_segments = segment_data(front_sensor_data, front_landmarks);
-    right_data_segments = segment_data(right_sensor_data, front_landmarks); % it needs landmarks from front sensor data
-    
-    %% Get average waveform using Dynamic Time Warping
-    front_avg_data = avg_waveforms_thru_time_warp(front_data_segments);
-    right_avg_data = avg_waveforms_thru_time_warp(right_data_segments);
-    right_avg_data = resample(right_avg_data, length(front_avg_data), length(right_avg_data)); % match data length
-
-    %% Approximate sensor orientation for each sample in average sensor data
-    [degrees, distance] = get_degrees_from_sensor_data(front_avg_data, right_avg_data);
-  
-    %% Find environment map
-    [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, initial_x, initial_y);
-    
-    figure;
-    scatter(x_border_positions,y_border_positions);
-    title('Generated Map');
+    x_borders = {};
+    y_borders = {};
+    for i = 1:3
+        [x_border_positions, y_border_positions] = call_this;
+        x_borders{end+1} = x_border_positions;
+        y_borders{end+1} = y_border_positions;
+    end
 
 end
 
@@ -74,4 +49,39 @@ function time_warped_avg = avg_waveforms_thru_time_warp(data_segments)
         seg1 = avg_waveform;
     end
     time_warped_avg = avg_waveform;
+end
+
+function [x_border_positions, y_border_positions] = call_this
+    scale_factor = 0.2; % reduce size for faster computation
+    initial_x = 700*scale_factor;
+    initial_y = 600*scale_factor;
+    [env, env_size_x, env_size_y] = get_environment_from_image('2D_drawing2.png', scale_factor); % load map from PNG
+    
+    env_info = {env, env_size_x, env_size_y};
+    
+    [front_sensor_data, right_sensor_data] = get_noisy_sensor_data(initial_x, initial_y, env_info);
+    
+    %% Find landmarks in sensor data
+    [front_landmarks, right_landmarks] = clusterLandmarks(front_sensor_data, right_sensor_data);
+    front_landmarks = front_landmarks(:,any(front_landmarks)); % remove columns with zeros
+    right_landmarks = right_landmarks(:,any(right_landmarks)); % remove columns with zeros
+
+    %% Segment sensor data into 360 degree turns
+    front_data_segments = segment_data(front_sensor_data, front_landmarks);
+    right_data_segments = segment_data(right_sensor_data, front_landmarks); % it needs landmarks from front sensor data
+    
+    %% Get average waveform using Dynamic Time Warping
+    front_avg_data = avg_waveforms_thru_time_warp(front_data_segments);
+    right_avg_data = avg_waveforms_thru_time_warp(right_data_segments);
+    right_avg_data = resample(right_avg_data, length(front_avg_data), length(right_avg_data)); % match data length
+
+    %% Approximate sensor orientation for each sample in average sensor data
+    [degrees, distance] = get_degrees_from_sensor_data(front_avg_data, right_avg_data);
+  
+    %% Find environment map
+    [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, initial_x, initial_y);
+    
+    figure;
+    scatter(x_border_positions,y_border_positions);
+    title('Generated Map');
 end
