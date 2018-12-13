@@ -290,6 +290,7 @@ for iter=1:maxIter
     TT=Ri*TT+Ti;                        %
     
     if iter >= minIter
+        disp(abs(oldres-res))
         if abs(oldres-res) < thres
             break
         end

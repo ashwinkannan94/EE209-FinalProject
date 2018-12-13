@@ -15,7 +15,6 @@ function main_routine
         x_borders{end+1} = x_border_positions;
         y_borders{end+1} = y_border_positions;
     end
-    % move to a new location and call 8-10 again
     [x_rotated, y_rotated] = find_rotation_between_maps(x_borders, y_borders);
     for k = 1:numel(x_rotated)
         figure;
@@ -37,7 +36,6 @@ function main_routine
     image_thresholded(image>202) = 256;
 %     image_thresholded(image<202) = 0;
     figure;
-    
     imshow(image_thresholded(:, :, 1),[0 255])
 
 end
@@ -103,24 +101,33 @@ function [x_border_positions, y_border_positions] = original_main_routine(env_in
     %% Find environment map
     [x_border_positions,y_border_positions] = generate_border_points(distance, degrees, initial_x, initial_y);
     
-    figure;
-    scatter(x_border_positions,y_border_positions);
-    title('Generated Map');
+%     figure;
+%     scatter(x_border_positions,y_border_positions);
+%     title('Generated Map');
 end
 
 function [x_rotated, y_rotated] = find_rotation_between_maps(x_borders, y_borders)
     x_values_1 = x_borders{1};
     y_values_1 = y_borders{1};
-    x_rotated = {}
-    y_rotated = {}
+    x_rotated = {};
+    y_rotated = {};
     x_rotated{end+1} = x_values_1;
     y_rotated{end+1} = y_values_1;
     for i=2:length(x_borders)
+        if i == 2
+            x_vals = x_borders{i};
+            y_vals = y_borders{i};
+            mat = [x_vals;y_vals];
+            R = [cosd(180) -sind(180); sind(180) cosd(180)];
+            mat_rotated = R*mat;
+            x_borders{i} = mat_rotated(1,:);
+            y_borders{i} = mat_rotated(2,:);
+        end
         x_values_2 = x_borders{i};
         y_values_2 = y_borders{i};
         model = [x_values_1;y_values_1];
         data = [x_values_2; y_values_2];
-        [RotMat,TransVec,dataOut]=icp(model,data);
+        [RotMat,TransVec,dataOut]=icp(model,data,1000,1000,0,1e-16);
         x_rotated{end+1} = dataOut(1,:);
         y_rotated{end+1} = dataOut(2,:);
 %         figure(6)
