@@ -1,4 +1,4 @@
-function [xy_coord, image_matrix] = convert_image(image_filename)
+function [x_coord, y_coord, image_matrix] = convert_image(image_filename)
     %% Load image file as grayscale image
     RGB_image = imread(image_filename);
     grayscale_image = rgb2gray(RGB_image);
@@ -16,22 +16,21 @@ function [xy_coord, image_matrix] = convert_image(image_filename)
 
     image_matrix = flipud(grayscale_image);
     
-    binaryImage = image_matrix < 128;
-    image_matrix = bwmorph(binaryImage, 'skel', inf); % shrink thickness of lines
+    image_matrix = image_matrix < 128;
+%     image_matrix = bwmorph(binaryImage, 'skel', inf); % shrink thickness of lines
     image_matrix = image_matrix == 0;
     image_matrix = double(image_matrix);
     
 %     imshow(image_matrix);
     
-    x = [];
-    y = [];
+    x_coord = [];
+    y_coord = [];
     for i = 1:size(image_matrix,1)
         for j = 1:size(image_matrix,2)
             if image_matrix(i,j) == 0
-                x = [x; j];
-                y = [y; i];
+                x_coord = [x_coord; j];
+                y_coord = [y_coord; i];
             end
         end
     end
-    xy_coord = [x,y];
 end
