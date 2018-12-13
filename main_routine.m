@@ -3,7 +3,7 @@ function main_routine
     dbstop if error;
     rng(2)
     scale_factor = 0.5; % reduce size for faster computation
-    [env, env_size_x, env_size_y] = get_environment_from_image('new_img.png', scale_factor); % load map from PNG
+    [env, env_size_x, env_size_y, i] = get_environment_from_image('new_img.png', scale_factor); % load map from PNG
     env_info = {env, env_size_x, env_size_y};
     
     x_borders = {};
