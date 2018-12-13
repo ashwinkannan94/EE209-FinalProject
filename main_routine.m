@@ -123,6 +123,15 @@ function [x_rotated, y_rotated] = find_rotation_between_maps(x_borders, y_border
             x_borders{i} = mat_rotated(1,:);
             y_borders{i} = mat_rotated(2,:);
         end
+        if i == 3
+            x_vals = x_borders{i};
+            y_vals = y_borders{i};
+            mat = [x_vals;y_vals];
+            R = [cosd(180) -sind(180); sind(180) cosd(180)];
+            mat_rotated = R*mat;
+            x_borders{i} = mat_rotated(1,:);
+            y_borders{i} = mat_rotated(2,:);
+        end
         x_values_2 = x_borders{i};
         y_values_2 = y_borders{i};
         model = [x_values_1;y_values_1];
