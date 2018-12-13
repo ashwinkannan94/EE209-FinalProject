@@ -15,21 +15,22 @@ function main_routine
         x_borders{end+1} = x_border_positions;
         y_borders{end+1} = y_border_positions;
     end
-    [x_rotated, y_rotated] = find_rotation_between_maps(x_borders, y_borders);
-    for k = 1:numel(x_rotated)
-        figure;
-        x_positions = x_rotated{k};
-        y_positions = y_rotated{k};
-        plot(x_positions,y_positions,'.k')
-        axis off;
-    end
-    FolderName = 'tempdir';   % Your destination folder
-    FigList = findobj(allchild(0), 'flat', 'Type', 'figure');
-    for k = 1:length(FigList)
-        baseFileName = sprintf('figure_%d.jpg',k);
-        fullFileName = fullfile('tempdir', baseFileName);
-        saveas(figure(k), fullFileName)
-    end
+%     [x_rotated, y_rotated] = find_rotation_between_maps(x_borders, y_borders);
+%     for k = 1:numel(x_rotated)
+%         figure;
+%         x_positions = x_rotated{k};
+%         y_positions = y_rotated{k};
+%         plot(x_positions,y_positions,'.k')
+%         axis off;
+%     end
+%     FolderName = 'tempdir';   % Your destination folder
+%     FigList = findobj(allchild(0), 'flat', 'Type', 'figure');
+%     for k = 1:length(FigList)
+%         baseFileName = sprintf('figure_%d.jpg',k);
+%         fullFileName = fullfile('tempdir', baseFileName);
+%         saveas(figure(k), fullFileName)
+%     end
+    minICP(x_borders, y_borders)
     mean_image = read_images_and_return_average_image;
     image = mean_image(:, :, 1);
     image_thresholded = image;
