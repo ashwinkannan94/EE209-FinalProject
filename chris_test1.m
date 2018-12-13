@@ -1,8 +1,8 @@
 function chris_test1 
     clear all;
     close all;
-    test_metric
-%     test_all;
+%     test_metric
+    test_all;
 end
 
 function test_metric
