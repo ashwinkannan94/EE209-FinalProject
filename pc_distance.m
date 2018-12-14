@@ -11,7 +11,7 @@ function distance = pc_distance(A, B)
         a = A(:,i);
         min_dist = inf;
         for j = 1:length(B)
-           b = B(:,i);
+           b = B(:,j);
            dist = sqrt(sum((a - b).^2));
            if dist < min_dist
                min_dist = dist;
@@ -26,7 +26,7 @@ function distance = pc_distance(A, B)
         b = B(:,i);
         min_dist = inf;
         for j = 1:length(A)
-           a = A(:,i);
+           a = A(:,j);
            dist = sqrt(sum((a - b).^2));
            if dist < min_dist
                min_dist = dist;
